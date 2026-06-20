@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/main_window">
+        <file>Assets/image/Home_Light_BG.png</file>
+        <file>Assets/image/header.png</file>
+        <file>Assets/icon/new_file.png</file>
+        <file>Assets/icon/open_file.png</file>
+    </qresource>
+    <qresource prefix="/editor_windwow">
+        <file>Assets/icon/back.png</file>
+        <file>Assets/icon/redo.png</file>
+        <file>Assets/icon/save.png</file>
+        <file>Assets/icon/undo_dropdown.png</file>
+        <file>Assets/icon/undo.png</file>
+    </qresource>
+    <qresource prefix="/openfile_window">
+        <file>Assets/image/open_file.png</file>
+        <file>Assets/icon/cancel.png</file>
+        <file>Assets/icon/pilih_folder.png</file>
+        <file>Assets/icon/open.png</file>
+    </qresource>
+</RCC>
