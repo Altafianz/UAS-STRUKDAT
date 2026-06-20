@@ -1,164 +1,160 @@
 #include "snapshot.h"
+using namespace std;
 
 // ============================================================
-//  HISTORY LIST
+//  DOUBLY LINKED LIST
 // ============================================================
-HistoryList::HistoryList()
-    : _head(nullptr), _tail(nullptr), _current(nullptr), _size(0) {}
-
-HistoryList::~HistoryList() { clear(); }
-
-DLLNode* HistoryList::append(const std::string& text) {
-    DLLNode* node = new DLLNode(text);
-    if (!_tail) {
-        _head = _tail = node;
-    } else {
-        node->prev  = _tail;
-        _tail->next = node;
-        _tail       = node;
-    }
-    _current = node;
-    _size++;
-    return node;
+void initHistoryList(HistoryList& list) {
+    list.head    = NULL;
+    list.tail    = NULL;
+    list.current = NULL;
+    list.size    = 0;
 }
 
-void HistoryList::removeNode(DLLNode* node) {
-    if (!node) return;
+DLLNode* appendHistory(HistoryList& list, const string& text) {
+    DLLNode* baru = new DLLNode();
+    baru->text = text;
+    baru->prev = NULL;
+    baru->next = NULL;
 
-    if (node->prev) node->prev->next = node->next;
-    else            _head = node->next;
+    if (list.tail == NULL) {
+        list.head = list.tail = baru;
+    } else {
+        baru->prev      = list.tail;
+        list.tail->next = baru;
+        list.tail       = baru;
+    }
 
-    if (node->next) node->next->prev = node->prev;
-    else            _tail = node->prev;
+    list.current = baru;
+    list.size++;
+    return baru;
+}
 
-    if (_current == node)
-        _current = node->next ? node->next : node->prev;
+void removeNode(HistoryList& list, DLLNode* node) {
+    if (node == NULL) return;
+
+    if (node->prev != NULL) node->prev->next = node->next;
+    else                    list.head = node->next;
+
+    if (node->next != NULL) node->next->prev = node->prev;
+    else                    list.tail = node->prev;
+
+    if (list.current == node)
+        list.current = (node->next != NULL) ? node->next : node->prev;
 
     delete node;
-    _size--;
+    list.size--;
 }
 
-void HistoryList::removeAfter(DLLNode* node) {
-    if (!node) return;
+void removeAfter(HistoryList& list, DLLNode* node) {
+    if (node == NULL) return;
     DLLNode* cur = node->next;
-    while (cur) {
+    while (cur != NULL) {
         DLLNode* tmp = cur->next;
         delete cur;
-        _size--;
+        list.size--;
         cur = tmp;
     }
-    node->next = nullptr;
-    _tail      = node;
+    node->next = NULL;
+    list.tail  = node;
 }
 
-void HistoryList::clear() {
-    DLLNode* cur = _head;
-    while (cur) {
+void clearHistoryList(HistoryList& list) {
+    DLLNode* cur = list.head;
+    while (cur != NULL) {
         DLLNode* tmp = cur->next;
         delete cur;
         cur = tmp;
     }
-    _head = _tail = _current = nullptr;
-    _size = 0;
+    list.head = list.tail = list.current = NULL;
+    list.size = 0;
 }
 
-DLLNode* HistoryList::head()    const { return _head; }
-DLLNode* HistoryList::tail()    const { return _tail; }
-DLLNode* HistoryList::current() const { return _current; }
-void     HistoryList::setCurrent(DLLNode* node) { _current = node; }
-int      HistoryList::size()    const { return _size; }
-
-bool HistoryList::movePrev() {
-    if (_current && _current->prev) {
-        _current = _current->prev;
-        return true;
-    }
-    return false;
+void movePrev(HistoryList& list) {
+    if (list.current != NULL && list.current->prev != NULL)
+        list.current = list.current->prev;
 }
 
-bool HistoryList::moveNext() {
-    if (_current && _current->next) {
-        _current = _current->next;
-        return true;
-    }
-    return false;
+void moveNext(HistoryList& list) {
+    if (list.current != NULL && list.current->next != NULL)
+        list.current = list.current->next;
 }
 
 // ============================================================
 //  BOUNDED QUEUE
 // ============================================================
-BoundedQueue::BoundedQueue() : _front(nullptr), _rear(nullptr), _size(0) {}
+void initQueue(BoundedQueue& q) {
+    q.front = NULL;
+    q.rear  = NULL;
+    q.size  = 0;
+}
 
-BoundedQueue::~BoundedQueue() { clear(); }
+DLLNode* enqueue(BoundedQueue& q, DLLNode* node) {
+    QueueNode* baru = new QueueNode();
+    baru->ref  = node;
+    baru->next = NULL;
 
-DLLNode* BoundedQueue::enqueue(DLLNode* node) {
-    QueueNode* qn = new QueueNode(node);
-
-    if (!_rear) {
-        _front = _rear = qn;
+    if (q.rear == NULL) {
+        q.front = q.rear = baru;
     } else {
-        _rear->next = qn;
-        _rear       = qn;
+        q.rear->next = baru;
+        q.rear       = baru;
     }
-    _size++;
+    q.size++;
 
     // Jika melebihi batas, evict node paling lama
-    if (_size > MAX_HISTORY) {
-        QueueNode* old     = _front;
-        DLLNode*   evicted = old->ref;
-        _front = _front->next;
-        if (!_front) _rear = nullptr;
-        delete old;
-        _size--;
-        return evicted;   // caller wajib hapus dari HistoryList
+    if (q.size > MAX_HISTORY) {
+        QueueNode* hapus   = q.front;
+        DLLNode*   evicted = hapus->ref;
+        q.front = q.front->next;
+        if (q.front == NULL) q.rear = NULL;
+        delete hapus;
+        q.size--;
+        return evicted;   // caller wajib hapus dari historyList
     }
 
-    return nullptr;
+    return NULL;
 }
 
-void BoundedQueue::clear() {
-    while (_front) {
-        QueueNode* tmp = _front;
-        _front = _front->next;
+void clearQueue(BoundedQueue& q) {
+    while (q.front != NULL) {
+        QueueNode* tmp = q.front;
+        q.front = q.front->next;
         delete tmp;
     }
-    _rear  = nullptr;
-    _size  = 0;
+    q.rear = NULL;
+    q.size = 0;
 }
-
-int BoundedQueue::size() const { return _size; }
 
 // ============================================================
 //  SAVE SNAPSHOT
 // ============================================================
-void saveSnapshot(std::string&  currentText,
-                  Stack&        undoStack,
-                  Stack&        redoStack,
-                  HistoryList&  historyList,
+void saveSnapshot(string& currentText,
+                  Stack& undoStack,
+                  Stack& redoStack,
+                  HistoryList& historyList,
                   BoundedQueue& historyQueue,
-                  const std::string& newText)
+                  const string& newText)
 {
-    // Jika ada node setelah current (aksi baru setelah undo),
-    // hapus semua node setelah current terlebih dahulu
-    if (historyList.current() &&
-        historyList.current() != historyList.tail()) {
-        historyList.removeAfter(historyList.current());
+    // Jika ada node setelah current, hapus dulu (aksi baru setelah undo)
+    if (historyList.current != NULL && historyList.current != historyList.tail) {
+        removeAfter(historyList, historyList.current);
     }
 
     // Append snapshot baru ke DLL
-    DLLNode* newNode = historyList.append(newText);
+    DLLNode* newNode = appendHistory(historyList, newText);
 
-    // Masukkan ke bounded queue; jika evict, hapus dari DLL juga
-    DLLNode* evicted = historyQueue.enqueue(newNode);
-    if (evicted) {
-        historyList.removeNode(evicted);
+    // Masukkan ke queue; jika ada yang dievict, hapus dari DLL juga
+    DLLNode* evicted = enqueue(historyQueue, newNode);
+    if (evicted != NULL) {
+        removeNode(historyList, evicted);
     }
 
-    // Push teks lama ke undoStack sebelum update currentText
-    undoStack.push(currentText);
+    // Push teks lama ke undoStack
+    push(undoStack, currentText);
 
     // Kosongkan redoStack — ada aksi baru
-    redoStack.clear();
+    clearStack(redoStack);
 
     // Update teks aktif
     currentText = newText;
@@ -167,60 +163,60 @@ void saveSnapshot(std::string&  currentText,
 // ============================================================
 //  JUMP TO SNAPSHOT
 // ============================================================
-std::string jumpToSnapshot(std::string&  currentText,
-                           Stack&        undoStack,
-                           Stack&        redoStack,
-                           HistoryList&  historyList,
-                           DLLNode*      targetNode)
+string jumpToSnapshot(string& currentText,
+                      Stack& undoStack,
+                      Stack& redoStack,
+                      HistoryList& historyList,
+                      DLLNode* targetNode)
 {
-    if (!targetNode) return currentText;
+    if (targetNode == NULL) return currentText;
 
-    undoStack.clear();
-    redoStack.clear();
+    clearStack(undoStack);
+    clearStack(redoStack);
 
     // Hitung jumlah node sebelum target
     int count = 0;
-    DLLNode* cur = historyList.head();
-    while (cur && cur != targetNode) { count++; cur = cur->next; }
+    DLLNode* cur = historyList.head;
+    while (cur != NULL && cur != targetNode) {
+        count++;
+        cur = cur->next;
+    }
 
-    // Kumpulkan teks node sebelum target ke array sementara,
-    // lalu push ke undoStack agar top = node terdekat ke target
+    // Push ke undoStack (pakai array sementara agar urutan benar)
     if (count > 0) {
-        std::string* tmp = new std::string[count];
-        cur = historyList.head();
+        string* tmp = new string[count];
+        cur = historyList.head;
         for (int i = 0; i < count; i++) {
             tmp[i] = cur->text;
-            cur    = cur->next;
+            cur = cur->next;
         }
         for (int i = 0; i < count; i++) {
-            undoStack.push(tmp[i]);
+            push(undoStack, tmp[i]);
         }
         delete[] tmp;
     }
 
-    // Kumpulkan teks node setelah target ke array sementara,
-    // lalu push terbalik ke redoStack agar top = node terdekat ke target
+    // Hitung jumlah node setelah target
     int rcount = 0;
     DLLNode* r = targetNode->next;
     DLLNode* rCur = r;
-    while (rCur) { rcount++; rCur = rCur->next; }
+    while (rCur != NULL) { rcount++; rCur = rCur->next; }
 
+    // Push ke redoStack (terbalik agar top = terdekat ke target)
     if (rcount > 0) {
-        std::string* rtmp = new std::string[rcount];
+        string* rtmp = new string[rcount];
         rCur = r;
         for (int i = 0; i < rcount; i++) {
             rtmp[i] = rCur->text;
-            rCur    = rCur->next;
+            rCur = rCur->next;
         }
         for (int i = rcount - 1; i >= 0; i--) {
-            redoStack.push(rtmp[i]);
+            push(redoStack, rtmp[i]);
         }
         delete[] rtmp;
     }
 
-    // Update pointer dan teks aktif
-    historyList.setCurrent(targetNode);
+    historyList.current = targetNode;
     currentText = targetNode->text;
-
     return currentText;
 }
