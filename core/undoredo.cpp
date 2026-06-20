@@ -1,70 +1,70 @@
 #include "undoredo.h"
+using namespace std;
 
 // ============================================================
 //  STACK
 // ============================================================
-Stack::Stack() : _top(nullptr) {}
-
-Stack::~Stack() { clear(); }
-
-void Stack::push(const std::string& text) {
-    StackNode* node = new StackNode(text);
-    node->next = _top;
-    _top = node;
+void initStack(Stack& s) {
+    s.top = NULL;
 }
 
-void Stack::pop() {
-    if (!_top) return;
-    StackNode* tmp = _top;
-    _top = _top->next;
-    delete tmp;
+void push(Stack& s, const string& text) {
+    StackNode* baru = new StackNode();
+    baru->text = text;
+    baru->next = s.top;
+    s.top = baru;
 }
 
-std::string Stack::top() const {
-    if (!_top) return "";
-    return _top->text;
+void pop(Stack& s) {
+    if (s.top == NULL) return;
+    StackNode* hapus = s.top;
+    s.top = s.top->next;
+    delete hapus;
 }
 
-bool Stack::isEmpty() const { return _top == nullptr; }
+string peek(const Stack& s) {
+    if (s.top == NULL) return "";
+    return s.top->text;
+}
 
-void Stack::clear() {
-    while (!isEmpty()) pop();
+bool isStackEmpty(const Stack& s) {
+    return s.top == NULL;
+}
+
+void clearStack(Stack& s) {
+    while (s.top != NULL) {
+        pop(s);
+    }
 }
 
 // ============================================================
-//  FUNGSI UNDO
+//  UNDO
 // ============================================================
-std::string undoAction(std::string& currentText,
-                       Stack& undoStack,
-                       Stack& redoStack)
-{
-    if (undoStack.isEmpty()) return currentText;
+string undoAction(string& currentText, Stack& undoStack, Stack& redoStack) {
+    if (isStackEmpty(undoStack)) return currentText;
 
     // Simpan teks saat ini ke redoStack
-    redoStack.push(currentText);
+    push(redoStack, currentText);
 
     // Ambil teks dari undoStack
-    currentText = undoStack.top();
-    undoStack.pop();
+    currentText = peek(undoStack);
+    pop(undoStack);
 
     return currentText;
 }
 
 // ============================================================
-//  FUNGSI REDO
+//  REDO
 // ============================================================
-std::string redoAction(std::string& currentText,
-                       Stack& undoStack,
-                       Stack& redoStack)
-{
-    if (redoStack.isEmpty()) return currentText;
+string redoAction(string& currentText, Stack& undoStack, Stack& redoStack) {
+    if (isStackEmpty(redoStack)) return currentText;
 
     // Simpan teks saat ini ke undoStack
-    undoStack.push(currentText);
+    push(undoStack, currentText);
 
     // Ambil teks dari redoStack
-    currentText = redoStack.top();
-    redoStack.pop();
+    currentText = peek(redoStack);
+    pop(redoStack);
 
     return currentText;
 }

@@ -2,52 +2,48 @@
 #define UNDOREDO_H
 
 #include <string>
+using namespace std;
 
 // ============================================================
 //  STACK NODE
 // ============================================================
 struct StackNode {
-    std::string text;
-    StackNode*  next;
-
-    StackNode(const std::string& t) : text(t), next(nullptr) {}
+    string     text;
+    StackNode* next;
 };
 
 // ============================================================
-//  STACK — dipakai untuk undoStack dan redoStack
+//  STACK — untuk undoStack dan redoStack
+//  Menggunakan linked list (efisien untuk string panjang)
 // ============================================================
-class Stack {
-public:
-    Stack();
-    ~Stack();
-
-    void        push(const std::string& text);
-    void        pop();
-    std::string top() const;
-    bool        isEmpty() const;
-    void        clear();
-
-private:
-    StackNode* _top;
+struct Stack {
+    StackNode* top;
 };
+
+// Inisialisasi stack (wajib dipanggil sebelum dipakai)
+void initStack(Stack& s);
+
+// Push teks ke stack
+void push(Stack& s, const string& text);
+
+// Pop node teratas
+void pop(Stack& s);
+
+// Ambil teks teratas tanpa menghapus
+string peek(const Stack& s);
+
+// Cek apakah stack kosong
+bool isStackEmpty(const Stack& s);
+
+// Kosongkan seluruh stack
+void clearStack(Stack& s);
 
 // ============================================================
 //  FUNGSI UNDO & REDO
-//  Dipanggil dari EditorWindow saat tombol undo/redo diklik.
-//  Parameter:
-//    currentText  — teks yang sedang tampil di QTextEdit
-//    undoStack    — stack undo milik editor
-//    redoStack    — stack redo milik editor
-//  Return value:
-//    string teks yang harus di-set ke QTextEdit.
-//    Jika stack kosong, kembalikan currentText apa adanya.
+//  Return: teks yang harus di-set ke QTextEdit.
+//          Jika stack kosong, kembalikan currentText apa adanya.
 // ============================================================
-std::string undoAction(std::string& currentText,
-                       Stack& undoStack,
-                       Stack& redoStack);
-
-std::string redoAction(std::string& currentText,
-                       Stack& undoStack,
-                       Stack& redoStack);
+string undoAction(string& currentText, Stack& undoStack, Stack& redoStack);
+string redoAction(string& currentText, Stack& undoStack, Stack& redoStack);
 
 #endif // UNDOREDO_H
