@@ -71,22 +71,48 @@
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="pilihFolderButton">
+  <widget class="QTableWidget" name="fileTableWidget">
    <property name="geometry">
     <rect>
-     <x>1030</x>
-     <y>120</y>
-     <width>151</width>
-     <height>51</height>
+     <x>70</x>
+     <y>130</y>
+     <width>1091</width>
+     <height>551</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">#pilihFolderButton {
-border-image: url(:/openfile_window/Assets/icon/pilih_folder.png);
+    <string notr="true">QTableWidget {
+    background-color: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 16px;
+    gridline-color: #bfdbfe;
+    font-family: &quot;Inter&quot;, &quot;Segoe UI&quot;, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 10px;
+    outline: 0;
+}
+
+QHeaderView::section {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 18px;
+    border: none;
+    border-bottom: 2px solid #2563eb;
+    padding: 8px;
+}
+
+QTableWidget::item {
+    color: #0f172a;
+    padding: 12px;
+    border: none;
+}
+
+QTableWidget::item:selected {
+    background-color: #dbeafe;
+    color: #1e40af;
 }</string>
-   </property>
-   <property name="text">
-    <string/>
    </property>
   </widget>
  </widget>

@@ -2,6 +2,7 @@
 #define OPENFILEWINDOW_H
 
 #include <QWidget>
+#include <QTableWidgetItem>
 class MainWindow;
 
 namespace Ui {
@@ -16,12 +17,18 @@ public:
     explicit OpenFileWindow(MainWindow *mainWin = nullptr, QWidget *parent = nullptr);
     ~OpenFileWindow();
 
-private slots:                          
-    void on_backButton_clicked(); 
+private slots:
+    void handleBackButtonClicked();
+    void handlePilihFolderButtonClicked();
+    void handleOpenButtonClicked();
+    void onFileRowClicked(QTableWidgetItem *item);
 
 private:
     Ui::OpenFileWindow *ui;
     MainWindow *mainWindowRef;
+    QString selectedFilePath;
+
+    void populateFileTable();
 };
 
 #endif // OPENFILEWINDOW_H
