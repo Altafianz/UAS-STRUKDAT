@@ -2,6 +2,10 @@
 #define EDITORWINDOW_H
 
 #include <QWidget>
+#include <QListWidgetItem>
+#include "../core/snapshot.h"
+#include "../core/undoredo.h"
+#include "../core/filemanager.h"
 
 class MainWindow;
 
@@ -17,12 +21,29 @@ public:
     explicit EditorWindow(MainWindow *mainWin = nullptr, QWidget *parent = nullptr);
     ~EditorWindow();
 
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 private slots:
-    void on_backButton_clicked();
+    void handleBackButton();
+    void handleUndoButton();
+    void handleRedoButton();
+    void handleSaveButton();
+    void toggleHistoryDropdown();
+    void onHistoryItemClicked(QListWidgetItem *item);
 
 private:
     Ui::EditorWindow *ui;
     MainWindow *mainWindowRef;
+
+    string       currentText;
+    Stack        undoStack;
+    Stack        redoStack;
+    HistoryList  historyList;
+    BoundedQueue historyQueue;
+    string       filePath;
+
+    void refreshTextEdit(const string &text);
 };
 
 #endif // EDITORWINDOW_H

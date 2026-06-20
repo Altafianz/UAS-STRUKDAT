@@ -33,6 +33,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         window/editorwindow.h window/editorwindow.cpp window/editorwindow.ui
         window/openfilewindow.h window/openfilewindow.cpp window/openfilewindow.ui
         window/creditwindow.h window/creditwindow.cpp window/creditwindow.ui
+        window/dialogs.h window/dialogs.cpp window/dialogs.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Teks-Editor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -18,4 +18,16 @@
         <file>Assets/icon/pilih_folder.png</file>
         <file>Assets/icon/open.png</file>
     </qresource>
+    <qresource prefix="/dialog">
+        <file>Assets/image/save_new_file.png</file>
+        <file>Assets/icon/Cancel_icon_save.png</file>
+        <file>Assets/icon/save_file_icon.png</file>
+        <file>Assets/icon/save_grey.png</file>
+        <file>Assets/image/waning_not_save.png</file>
+        <file>Assets/icon/cancel_shadow.png</file>
+        <file>Assets/icon/dont_save.png</file>
+        <file>Assets/icon/save_file_icon_shadow.png</file>
+        <file>Assets/icon/cheklist.png</file>
+        <file>Assets/icon/ok.png</file>
+    </qresource>
 </RCC>
