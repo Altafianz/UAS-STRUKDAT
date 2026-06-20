@@ -20,6 +20,7 @@ public:
 private slots:
     void on_newFile_clicked();
     void on_openFile_clicked();
+    void on_about_clicked();
 
     private:
     Ui::MainWindow *ui;

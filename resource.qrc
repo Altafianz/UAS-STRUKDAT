@@ -4,6 +4,7 @@
         <file>Assets/image/header.png</file>
         <file>Assets/icon/new_file.png</file>
         <file>Assets/icon/open_file.png</file>
+        <file>Assets/icon/about.png</file>
     </qresource>
     <qresource prefix="/editor_windwow">
         <file>Assets/icon/back.png</file>
@@ -29,5 +30,9 @@
         <file>Assets/icon/save_file_icon_shadow.png</file>
         <file>Assets/icon/cheklist.png</file>
         <file>Assets/icon/ok.png</file>
+    </qresource>
+    <qresource prefix="/credit">
+        <file>Assets/image/Credit.png</file>
+        <file>Assets/icon/back_blue.png</file>
     </qresource>
 </RCC>

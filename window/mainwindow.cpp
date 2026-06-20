@@ -3,6 +3,7 @@
 
 #include "editorwindow.h"
 #include "openfilewindow.h"
+#include "creditwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->newFileButton, &QPushButton::clicked, this, &MainWindow::on_newFile_clicked);
     connect(ui->openFileButton, &QPushButton::clicked, this, &MainWindow::on_openFile_clicked);
+    connect(ui->aboutButton, &QPushButton::clicked, this, &MainWindow::on_about_clicked);
 }
 
 MainWindow::~MainWindow()
@@ -30,5 +32,12 @@ void MainWindow::on_openFile_clicked()
 {
     OpenFileWindow *openFile = new OpenFileWindow(this);
     openFile->show();
+    this->hide();
+}
+
+void MainWindow::on_about_clicked()
+{
+    CreditWindow *credit = new CreditWindow(this);
+    credit->show();
     this->hide();
 }
