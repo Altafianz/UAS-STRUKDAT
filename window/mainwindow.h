@@ -17,7 +17,11 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
-private:
+private slots:
+    void on_newFile_clicked();
+    void on_openFile_clicked();
+
+    private:
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H
