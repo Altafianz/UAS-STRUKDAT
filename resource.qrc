@@ -12,12 +12,16 @@
         <file>Assets/icon/save.png</file>
         <file>Assets/icon/undo_dropdown.png</file>
         <file>Assets/icon/undo.png</file>
+        <file>Assets/icon/sorting.png</file>
+        <file>Assets/icon/template.png</file>
     </qresource>
     <qresource prefix="/openfile_window">
         <file>Assets/image/open_file.png</file>
         <file>Assets/icon/cancel.png</file>
         <file>Assets/icon/pilih_folder.png</file>
         <file>Assets/icon/open.png</file>
+        <file>Assets/icon/sorting_nama.png</file>
+        <file>Assets/icon/sorting_tanggal.png</file>
     </qresource>
     <qresource prefix="/dialog">
         <file>Assets/image/save_new_file.png</file>

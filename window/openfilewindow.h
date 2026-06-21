@@ -3,11 +3,18 @@
 
 #include <QWidget>
 #include <QTableWidgetItem>
+#include <QDateTime>
 class MainWindow;
 
 namespace Ui {
 class OpenFileWindow;
 }
+
+struct FileEntry {
+    QString   name;
+    QString   fullPath;
+    QDateTime modified;
+};
 
 class OpenFileWindow : public QWidget
 {
@@ -20,6 +27,8 @@ public:
 private slots:
     void handleBackButtonClicked();
     void handleOpenButtonClicked();
+    void handleSortByNameClicked();
+    void handleSortByDateClicked();
     void onFileRowClicked(QTableWidgetItem *item);
 
 private:
@@ -27,7 +36,14 @@ private:
     MainWindow *mainWindowRef;
     QString selectedFilePath;
 
-    void populateFileTable();
+    QVector<FileEntry> fileEntries;
+    bool sortNameAscending = true;
+    bool sortDateAscending = true;
+
+    void loadFileEntries();
+    void renderFileTable();
+    void bubbleSortByName(bool ascending); 
+    void bubbleSortByDate(bool ascending); 
 };
 
 #endif // OPENFILEWINDOW_H
