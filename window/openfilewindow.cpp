@@ -20,7 +20,7 @@ OpenFileWindow::OpenFileWindow(MainWindow *mainWin, QWidget *parent)
     QStringList headers = {"No", "Nama File", "Tanggal Diubah"};
     ui->fileTableWidget->setHorizontalHeaderLabels(headers);
 
-    ui->fileTableWidget->verticalHeader()->setVisible(false); // matiin nomor bawaan, dobel sama kolom "No"
+    ui->fileTableWidget->verticalHeader()->setVisible(false);
 
     ui->fileTableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->fileTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
@@ -36,8 +36,11 @@ OpenFileWindow::OpenFileWindow(MainWindow *mainWin, QWidget *parent)
     connect(ui->openButton, &QPushButton::clicked, this, &OpenFileWindow::handleOpenButtonClicked);
     connect(ui->fileTableWidget, &QTableWidget::itemClicked, this, &OpenFileWindow::onFileRowClicked);
     connect(ui->fileTableWidget, &QTableWidget::itemDoubleClicked, this, &OpenFileWindow::handleOpenButtonClicked);
+    connect(ui->sortByDateButton, &QPushButton::clicked, this, &OpenFileWindow::handleSortByDateClicked);
+    connect(ui->sortByNameButton, &QPushButton::clicked, this, &OpenFileWindow::handleSortByNameClicked);
 
-    populateFileTable();
+    loadFileEntries();
+    renderFileTable();
 }
 
 OpenFileWindow::~OpenFileWindow()
@@ -45,56 +48,146 @@ OpenFileWindow::~OpenFileWindow()
     delete ui;
 }
 
-void OpenFileWindow::populateFileTable()
+void OpenFileWindow::loadFileEntries()
 {
-    ui->fileTableWidget->setRowCount(0);
+    fileEntries.clear();
 
     string savePath = loadConfig();
     int count = 0;
-    string* fileNames = loadIndex(savePath, count);
+    string *fileNames = loadIndex(savePath, count);
 
-    if (fileNames == nullptr || count == 0) {
+    if (fileNames == nullptr || count == 0)
+    {
         return;
     }
 
-    ui->fileTableWidget->setRowCount(count);
-
-    for (int i = 0; i < count; i++) {
-        QString name     = QString::fromStdString(fileNames[i]);
+    for (int i = 0; i < count; i++)
+    {
+        QString name = QString::fromStdString(fileNames[i]);
         QString fullPath = QString::fromStdString(savePath) + name;
-
         QFileInfo info(fullPath);
-        QString modifiedDate = info.exists()
-                                    ? info.lastModified().toString("dd/MM/yy")
-                                    : "-";
 
-        QTableWidgetItem *noItem = new QTableWidgetItem(QString::number(i + 1));
-        noItem->setTextAlignment(Qt::AlignCenter);
+        FileEntry entry;
+        entry.name = name;
+        entry.fullPath = fullPath;
+        entry.modified = info.exists() ? info.lastModified() : QDateTime();
 
-        QTableWidgetItem *nameItem = new QTableWidgetItem(name);
-        nameItem->setData(Qt::UserRole, fullPath); // full path tetap nempel di kolom nama
-
-        QTableWidgetItem *dateItem = new QTableWidgetItem(modifiedDate);
-
-        ui->fileTableWidget->setItem(i, 0, noItem);
-        ui->fileTableWidget->setItem(i, 1, nameItem);
-        ui->fileTableWidget->setItem(i, 2, dateItem);
+        fileEntries.append(entry);
     }
 
     delete[] fileNames;
 }
 
+void OpenFileWindow::renderFileTable()
+{
+    ui->fileTableWidget->setRowCount(fileEntries.size());
+
+    for (int i = 0; i < fileEntries.size(); i++)
+    {
+        const FileEntry &entry = fileEntries[i];
+
+        QTableWidgetItem *noItem = new QTableWidgetItem(QString::number(i + 1));
+        noItem->setTextAlignment(Qt::AlignCenter);
+
+        QTableWidgetItem *nameItem = new QTableWidgetItem(entry.name);
+        nameItem->setData(Qt::UserRole, entry.fullPath);
+
+        QString dateText = entry.modified.isValid()
+                               ? entry.modified.toString("dd/MM/yy")
+                               : "-";
+        QTableWidgetItem *dateItem = new QTableWidgetItem(dateText);
+
+        ui->fileTableWidget->setItem(i, 0, noItem);
+        ui->fileTableWidget->setItem(i, 1, nameItem);
+        ui->fileTableWidget->setItem(i, 2, dateItem);
+    }
+}
+
+void OpenFileWindow::bubbleSortByName(bool ascending)
+{
+    int n = fileEntries.size();
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        bool swapped = false;
+
+        for (int j = 0; j < n - 1 - i; j++)
+        {
+            QString a = fileEntries[j].name.toLower();
+            QString b = fileEntries[j + 1].name.toLower();
+
+            bool needSwap = ascending ? (a > b) : (a < b);
+
+            if (needSwap)
+            {
+                FileEntry temp = fileEntries[j];
+                fileEntries[j] = fileEntries[j + 1];
+                fileEntries[j + 1] = temp;
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+            break;
+    }
+}
+
+void OpenFileWindow::bubbleSortByDate(bool ascending)
+{
+    int n = fileEntries.size();
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        bool swapped = false;
+
+        for (int j = 0; j < n - 1 - i; j++)
+        {
+            QDateTime a = fileEntries[j].modified;
+            QDateTime b = fileEntries[j + 1].modified;
+
+            bool needSwap = ascending ? (a > b) : (a < b);
+
+            if (needSwap)
+            {
+                FileEntry temp = fileEntries[j];
+                fileEntries[j] = fileEntries[j + 1];
+                fileEntries[j + 1] = temp;
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+            break;
+    }
+}
+
+void OpenFileWindow::handleSortByNameClicked()
+{
+    bubbleSortByName(sortNameAscending);
+    sortNameAscending = !sortNameAscending;
+    renderFileTable();
+}
+
+void OpenFileWindow::handleSortByDateClicked()
+{
+    bubbleSortByDate(sortDateAscending);
+    sortDateAscending = !sortDateAscending;
+    renderFileTable();
+}
+
 void OpenFileWindow::onFileRowClicked(QTableWidgetItem *item)
 {
     QTableWidgetItem *nameItem = ui->fileTableWidget->item(item->row(), 1);
-    if (nameItem) {
+    if (nameItem)
+    {
         selectedFilePath = nameItem->data(Qt::UserRole).toString();
     }
 }
 
 void OpenFileWindow::handleBackButtonClicked()
 {
-    if (mainWindowRef) {
+    if (mainWindowRef)
+    {
         mainWindowRef->show();
     }
     this->close();
@@ -102,8 +195,18 @@ void OpenFileWindow::handleBackButtonClicked()
 
 void OpenFileWindow::handleOpenButtonClicked()
 {
-    if (selectedFilePath.isEmpty()) {
-        QMessageBox::warning(this, "Belum ada file", "Silakan pilih file dari daftar terlebih dahulu.");
+    if (selectedFilePath.isEmpty())
+    {
+        QMessageBox msgBox(this);
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setWindowTitle("Belum ada file");
+        msgBox.setText("Silakan pilih file dari daftar terlebih dahulu.");
+
+        msgBox.setStyleSheet(
+            "QLabel { font-family: 'Inter'; font-weight: 500; font-size: 14px; color: #1e293b; }"
+            "QPushButton { font-family: 'Inter'; font-size: 13px; min-width: 80px; color: #1e293b; }");
+
+        msgBox.exec();
         return;
     }
 

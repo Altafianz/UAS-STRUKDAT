@@ -2,25 +2,30 @@
 using namespace std;
 
 //  DOUBLY LINKED LIST
-void initHistoryList(HistoryList& list) {
-    list.head    = NULL;
-    list.tail    = NULL;
+void initHistoryList(HistoryList &list)
+{
+    list.head = NULL;
+    list.tail = NULL;
     list.current = NULL;
-    list.size    = 0;
+    list.size = 0;
 }
 
-DLLNode* appendHistory(HistoryList& list, const string& text) {
-    DLLNode* baru = new DLLNode();
+DLLNode *appendHistory(HistoryList &list, const string &text)
+{
+    DLLNode *baru = new DLLNode();
     baru->text = text;
     baru->prev = NULL;
     baru->next = NULL;
 
-    if (list.tail == NULL) {
+    if (list.tail == NULL)
+    {
         list.head = list.tail = baru;
-    } else {
-        baru->prev      = list.tail;
+    }
+    else
+    {
+        baru->prev = list.tail;
         list.tail->next = baru;
-        list.tail       = baru;
+        list.tail = baru;
     }
 
     list.current = baru;
@@ -28,14 +33,20 @@ DLLNode* appendHistory(HistoryList& list, const string& text) {
     return baru;
 }
 
-void removeNode(HistoryList& list, DLLNode* node) {
-    if (node == NULL) return;
+void removeNode(HistoryList &list, DLLNode *node)
+{
+    if (node == NULL)
+        return;
 
-    if (node->prev != NULL) node->prev->next = node->next;
-    else                    list.head = node->next;
+    if (node->prev != NULL)
+        node->prev->next = node->next;
+    else
+        list.head = node->next;
 
-    if (node->next != NULL) node->next->prev = node->prev;
-    else                    list.tail = node->prev;
+    if (node->next != NULL)
+        node->next->prev = node->prev;
+    else
+        list.tail = node->prev;
 
     if (list.current == node)
         list.current = (node->next != NULL) ? node->next : node->prev;
@@ -44,23 +55,29 @@ void removeNode(HistoryList& list, DLLNode* node) {
     list.size--;
 }
 
-void removeAfter(HistoryList& list, DLLNode* node) {
-    if (node == NULL) return;
-    DLLNode* cur = node->next;
-    while (cur != NULL) {
-        DLLNode* tmp = cur->next;
+void removeAfter(HistoryList &list, DLLNode *node)
+{
+    if (node == NULL)
+        return;
+    DLLNode *cur = node->next;
+    while (cur != NULL)
+    {
+        DLLNode *tmp = cur->next;
         delete cur;
         list.size--;
         cur = tmp;
     }
     node->next = NULL;
-    list.tail  = node;
+    list.tail = node;
 }
 
-void clearHistoryList(HistoryList& list) {
-    DLLNode* cur = list.head;
-    while (cur != NULL) {
-        DLLNode* tmp = cur->next;
+// ============= ENGGA DIPAKE ==================
+void clearHistoryList(HistoryList &list)
+{
+    DLLNode *cur = list.head;
+    while (cur != NULL)
+    {
+        DLLNode *tmp = cur->next;
         delete cur;
         cur = tmp;
     }
@@ -68,79 +85,90 @@ void clearHistoryList(HistoryList& list) {
     list.size = 0;
 }
 
-void movePrev(HistoryList& list) {
+void movePrev(HistoryList &list)
+{
     if (list.current != NULL && list.current->prev != NULL)
-        list.current = list.current->prev;
+    list.current = list.current->prev;
 }
 
-void moveNext(HistoryList& list) {
+void moveNext(HistoryList &list)
+{
     if (list.current != NULL && list.current->next != NULL)
-        list.current = list.current->next;
+    list.current = list.current->next;
 }
+// ============= ENGGA DIPAKE ==================
 
 //  bounded queue
-void initQueue(BoundedQueue& q) {
+void initQueue(BoundedQueue &q)
+{
     q.front = NULL;
-    q.rear  = NULL;
-    q.size  = 0;
+    q.rear = NULL;
+    q.size = 0;
 }
 
-DLLNode* enqueue(BoundedQueue& q, DLLNode* node) {
-    QueueNode* baru = new QueueNode();
-    baru->ref  = node;
+DLLNode *enqueue(BoundedQueue &q, DLLNode *node)
+{
+    QueueNode *baru = new QueueNode();
+    baru->ref = node;
     baru->next = NULL;
 
-    if (q.rear == NULL) {
+    if (q.rear == NULL)
+    {
         q.front = q.rear = baru;
-    } else {
+    }
+    else
+    {
         q.rear->next = baru;
-        q.rear       = baru;
+        q.rear = baru;
     }
     q.size++;
 
     // Jika melebihi batas, evict node paling lama
-    if (q.size > MAX_HISTORY) {
-        QueueNode* hapus   = q.front;
-        DLLNode*   evicted = hapus->ref;
+    if (q.size > MAX_HISTORY)
+    {
+        QueueNode *hapus = q.front;
+        DLLNode *evicted = hapus->ref;
         q.front = q.front->next;
-        if (q.front == NULL) q.rear = NULL;
+        if (q.front == NULL)
+            q.rear = NULL;
         delete hapus;
         q.size--;
-        return evicted;   // caller wajib hapus dari historyList
+        return evicted; // caller wajib hapus dari historyList
     }
 
     return NULL;
 }
 
-void clearQueue(BoundedQueue& q) {
-    while (q.front != NULL) {
-        QueueNode* tmp = q.front;
+// =============== ENGGA DIPAKE ===============
+void clearQueue(BoundedQueue &q)
+{
+    while (q.front != NULL)
+    {
+        QueueNode *tmp = q.front;
         q.front = q.front->next;
         delete tmp;
     }
     q.rear = NULL;
     q.size = 0;
 }
+// =============== ENGGA DIPAKE ===============
 
 //  save snapshot
-void saveSnapshot(string& currentText,
-                  Stack& undoStack,
-                  Stack& redoStack,
-                  HistoryList& historyList,
-                  BoundedQueue& historyQueue,
-                  const string& newText)
+void saveSnapshot(string &currentText,Stack &undoStack,Stack &redoStack,HistoryList &historyList, BoundedQueue &historyQueue,const string &newText)
 {
     // Jika ada node setelah current, hapus dulu (aksi baru setelah undo)
-    if (historyList.current != NULL && historyList.current != historyList.tail) {
+    if (historyList.current != NULL && historyList.current != historyList.tail)
+    {
         removeAfter(historyList, historyList.current);
     }
 
     // Append snapshot baru ke DLL
-    DLLNode* newNode = appendHistory(historyList, newText);
+    DLLNode *newNode = appendHistory(historyList, newText);
 
     // Masukkan ke queue; jika ada yang dievict, hapus dari DLL juga
-    DLLNode* evicted = enqueue(historyQueue, newNode);
-    if (evicted != NULL) {
+    DLLNode *evicted = enqueue(historyQueue, newNode);
+    if (evicted != NULL)
+    {
         removeNode(historyList, evicted);
     }
 
@@ -155,30 +183,35 @@ void saveSnapshot(string& currentText,
 }
 
 //  JUMP TO SNAPSHOT
-string jumpToSnapshot(string& currentText, Stack& undoStack, Stack& redoStack, HistoryList& historyList, DLLNode* targetNode)
+string jumpToSnapshot(string &currentText, Stack &undoStack, Stack &redoStack, HistoryList &historyList, DLLNode *targetNode)
 {
-    if (targetNode == NULL) return currentText;
+    if (targetNode == NULL)
+        return currentText;
 
     clearStack(undoStack);
     clearStack(redoStack);
 
     // Hitung jumlah node sebelum target
     int count = 0;
-    DLLNode* cur = historyList.head;
-    while (cur != NULL && cur != targetNode) {
+    DLLNode *cur = historyList.head;
+    while (cur != NULL && cur != targetNode)
+    {
         count++;
         cur = cur->next;
     }
 
     // Push ke undoStack (pakai array sementara agar urutan benar)
-    if (count > 0) {
-        string* tmp = new string[count];
+    if (count > 0)
+    {
+        string *tmp = new string[count];
         cur = historyList.head;
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++)
+        {
             tmp[i] = cur->text;
             cur = cur->next;
         }
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++)
+        {
             push(undoStack, tmp[i]);
         }
         delete[] tmp;
@@ -186,19 +219,26 @@ string jumpToSnapshot(string& currentText, Stack& undoStack, Stack& redoStack, H
 
     // Hitung jumlah node setelah target
     int rcount = 0;
-    DLLNode* r = targetNode->next;
-    DLLNode* rCur = r;
-    while (rCur != NULL) { rcount++; rCur = rCur->next; }
+    DLLNode *r = targetNode->next;
+    DLLNode *rCur = r;
+    while (rCur != NULL)
+    {
+        rcount++;
+        rCur = rCur->next;
+    }
 
     // Push ke redoStack (terbalik agar top = terdekat ke target)
-    if (rcount > 0) {
-        string* rtmp = new string[rcount];
+    if (rcount > 0)
+    {
+        string *rtmp = new string[rcount];
         rCur = r;
-        for (int i = 0; i < rcount; i++) {
+        for (int i = 0; i < rcount; i++)
+        {
             rtmp[i] = rCur->text;
             rCur = rCur->next;
         }
-        for (int i = rcount - 1; i >= 0; i--) {
+        for (int i = rcount - 1; i >= 0; i--)
+        {
             push(redoStack, rtmp[i]);
         }
         delete[] rtmp;

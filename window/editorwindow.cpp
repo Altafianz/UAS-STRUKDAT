@@ -18,7 +18,6 @@ EditorWindow::EditorWindow(MainWindow *mainWin, const QString &existingFilePath,
     initQueue(historyQueue);
 
     if (!existingFilePath.isEmpty()) {
-        // dibuka dari file yang sudah ada -> load isinya
         filePath    = existingFilePath.toStdString();
         currentText = loadFile(filePath);
 
@@ -54,13 +53,12 @@ bool EditorWindow::eventFilter(QObject *watched, QEvent *event)
     if (watched == ui->plainTextEdit && event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 
-        if (keyEvent->key() == Qt::Key_Space) {
+        if (keyEvent->key() == Qt::Key_Space || keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
             QTimer::singleShot(0, this, [this]() {
                 string newText = ui->plainTextEdit->toPlainText().toStdString();
 
                 if (newText != currentText) {
-                    saveSnapshot(currentText, undoStack, redoStack,
-                                 historyList, historyQueue, newText);
+                    saveSnapshot(currentText, undoStack, redoStack, historyList, historyQueue, newText);
                 }
             });
         }
@@ -104,7 +102,6 @@ void EditorWindow::handleSaveButton()
 void EditorWindow::performSave()
 {
     if (filePath.empty()) {
-        // FITUR 1: file baru -> minta nama dulu lewat popup
         dialogs *dlg = new dialogs(this);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->setSaveLocationText(QString::fromStdString(loadConfig()));
@@ -114,7 +111,6 @@ void EditorWindow::performSave()
 
         dlg->showPage(dialogs::PageSaveNew);
     } else {
-        // FITUR 2: file lama -> langsung overwrite ke path yang sudah ada
         writeToFile(QString::fromStdString(filePath));
     }
 }
@@ -141,8 +137,8 @@ void EditorWindow::onSaveAsConfirmed(const QString &fileName)
 void EditorWindow::writeToFile(const QString &path)
 {
     bool ok = saveFile(path.toStdString(), currentText);
-    if (!ok) return; // bisa ditambah popup error kalau perlu nanti
-
+    if (!ok) return;
+    
     filePath  = path.toStdString();
     savedText = currentText;
 

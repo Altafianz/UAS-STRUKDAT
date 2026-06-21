@@ -8,9 +8,11 @@ using namespace std;
 // ============================================================
 //  FILE I/O
 // ============================================================
-string loadFile(const string& filePath) {
+string loadFile(const string &filePath)
+{
     ifstream file(filePath);
-    if (!file.is_open()) return "";
+    if (!file.is_open())
+        return "";
 
     ostringstream ss;
     ss << file.rdbuf();
@@ -18,45 +20,59 @@ string loadFile(const string& filePath) {
     return ss.str();
 }
 
-bool saveFile(const string& filePath, const string& content) {
+bool saveFile(const string &filePath, const string &content)
+{
     ofstream file(filePath);
-    if (!file.is_open()) return false;
+    if (!file.is_open())
+        return false;
     file << content;
     file.close();
     return true;
 }
 
-bool catatKeIndex(const string& savePath, const string& namaFile) {
+bool catatKeIndex(const string &savePath, const string &namaFile)
+{
     string indexPath = savePath + INDEX_FILE;
     ofstream file(indexPath, ios::app);
-    if (!file.is_open()) return false;
+    if (!file.is_open())
+        return false;
     file << namaFile << "\n";
     file.close();
     return true;
 }
 
-string* loadIndex(const string& savePath, int& count) {
+string *loadIndex(const string &savePath, int &count)
+{
     count = 0;
     string indexPath = savePath + INDEX_FILE;
 
     ifstream file(indexPath);
-    if (!file.is_open()) return NULL;
+    if (!file.is_open())
+        return NULL;
 
     // Hitung jumlah baris tidak kosong
     string line;
-    while (getline(file, line)) {
-        if (!line.empty()) count++;
+    while (getline(file, line))
+    {
+        if (!line.empty())
+            count++;
     }
-    if (count == 0) { file.close(); return NULL; }
+    if (count == 0)
+    {
+        file.close();
+        return NULL;
+    }
 
     // Baca ulang dari awal
     file.clear();
     file.seekg(0);
 
-    string* result = new string[count];
+    string *result = new string[count];
     int i = 0;
-    while (getline(file, line)) {
-        if (!line.empty()) result[i++] = line;
+    while (getline(file, line))
+    {
+        if (!line.empty())
+            result[i++] = line;
     }
     file.close();
     return result;
@@ -65,12 +81,15 @@ string* loadIndex(const string& savePath, int& count) {
 // ============================================================
 //  CONFIG
 // ============================================================
-string loadConfig() {
+string loadConfig()
+{
     ifstream file(CONFIG_FILE);
-    if (!file.is_open()) return DEFAULT_SAVE_PATH;
+    if (!file.is_open())
+        return DEFAULT_SAVE_PATH;
 
     string line;
-    if (getline(file, line) && !line.empty()) {
+    if (getline(file, line) && !line.empty())
+    {
         file.close();
         // Pastikan diakhiri slash
         if (line.back() != '/' && line.back() != '\\')
@@ -82,9 +101,11 @@ string loadConfig() {
     return DEFAULT_SAVE_PATH;
 }
 
-bool saveConfig(const string& savePath) {
+bool saveConfig(const string &savePath)
+{
     ofstream file(CONFIG_FILE);
-    if (!file.is_open()) return false;
+    if (!file.is_open())
+        return false;
     file << savePath << "\n";
     file.close();
     return true;
@@ -93,7 +114,8 @@ bool saveConfig(const string& savePath) {
 // ============================================================
 //  UTILITY
 // ============================================================
-void ensureSaveDir(const string& savePath) {
+void ensureSaveDir(const string &savePath)
+{
 #if defined(_WIN32)
     mkdir(savePath.c_str());
 #else

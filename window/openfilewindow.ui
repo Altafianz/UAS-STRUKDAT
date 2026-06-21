@@ -115,6 +115,38 @@ QTableWidget::item:selected {
 }</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="sortByNameButton">
+   <property name="geometry">
+    <rect>
+     <x>890</x>
+     <y>690</y>
+     <width>281</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">image: url(:/openfile_window/Assets/icon/sorting_nama.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="sortByDateButton">
+   <property name="geometry">
+    <rect>
+     <x>880</x>
+     <y>740</y>
+     <width>301</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">image: url(:/openfile_window/Assets/icon/sorting_tanggal.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <resources>
   <include location="../resource.qrc"/>
