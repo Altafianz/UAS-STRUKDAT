@@ -100,15 +100,6 @@ void OpenFileWindow::handleBackButtonClicked()
     this->close();
 }
 
-void OpenFileWindow::handlePilihFolderButtonClicked()
-{
-    QString startDir = QString::fromStdString(loadConfig());
-    QString path = QFileDialog::getOpenFileName(this, "Pilih File", startDir, "Text Files (*.txt)");
-    if (!path.isEmpty()) {
-        selectedFilePath = path;
-    }
-}
-
 void OpenFileWindow::handleOpenButtonClicked()
 {
     if (selectedFilePath.isEmpty()) {

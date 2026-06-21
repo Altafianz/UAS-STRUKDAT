@@ -19,7 +19,6 @@ public:
 
 private slots:
     void handleBackButtonClicked();
-    void handlePilihFolderButtonClicked();
     void handleOpenButtonClicked();
     void onFileRowClicked(QTableWidgetItem *item);
 
