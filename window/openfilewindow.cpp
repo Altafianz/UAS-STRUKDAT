@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QHeaderView>
 
+// konstruktor: setup tabel daftar file, hubungkan tombol & klik baris, lalu langsung muat data
 OpenFileWindow::OpenFileWindow(MainWindow *mainWin, QWidget *parent)
     : QWidget(parent), ui(new Ui::OpenFileWindow), mainWindowRef(mainWin)
 {
@@ -20,7 +21,7 @@ OpenFileWindow::OpenFileWindow(MainWindow *mainWin, QWidget *parent)
     QStringList headers = {"No", "Nama File", "Tanggal Diubah"};
     ui->fileTableWidget->setHorizontalHeaderLabels(headers);
 
-    ui->fileTableWidget->verticalHeader()->setVisible(false);
+    ui->fileTableWidget->verticalHeader()->setVisible(false); // matiin nomor bawaan, dobel sama kolom "No"
 
     ui->fileTableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->fileTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
@@ -32,13 +33,13 @@ OpenFileWindow::OpenFileWindow(MainWindow *mainWin, QWidget *parent)
     ui->fileTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->fileTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 
+    // menghubungkan sinyal dari qt ke logika
     connect(ui->cancelButton, &QPushButton::clicked, this, &OpenFileWindow::handleBackButtonClicked);
     connect(ui->openButton, &QPushButton::clicked, this, &OpenFileWindow::handleOpenButtonClicked);
     connect(ui->fileTableWidget, &QTableWidget::itemClicked, this, &OpenFileWindow::onFileRowClicked);
     connect(ui->fileTableWidget, &QTableWidget::itemDoubleClicked, this, &OpenFileWindow::handleOpenButtonClicked);
-    connect(ui->sortByDateButton, &QPushButton::clicked, this, &OpenFileWindow::handleSortByDateClicked);
-    connect(ui->sortByNameButton, &QPushButton::clicked, this, &OpenFileWindow::handleSortByNameClicked);
 
+    // ambil daftar file dari index.txt, lalu tampilkan langsung ke tabel
     loadFileEntries();
     renderFileTable();
 }
@@ -48,6 +49,7 @@ OpenFileWindow::~OpenFileWindow()
     delete ui;
 }
 
+// mengambil daftar nama file dari index.txt (lewat loadIndex di filemanager), lalu disusun jadi fileEntries
 void OpenFileWindow::loadFileEntries()
 {
     fileEntries.clear();
@@ -78,6 +80,7 @@ void OpenFileWindow::loadFileEntries()
     delete[] fileNames;
 }
 
+// menampilkan ulang isi fileEntries ke fileTableWidget (dipanggil tiap kali data berubah, misal habis sorting)
 void OpenFileWindow::renderFileTable()
 {
     ui->fileTableWidget->setRowCount(fileEntries.size());
@@ -103,6 +106,7 @@ void OpenFileWindow::renderFileTable()
     }
 }
 
+// mengurutkan fileEntries berdasarkan nama file (A-Z / Z-A) memakai bubble sort
 void OpenFileWindow::bubbleSortByName(bool ascending)
 {
     int n = fileEntries.size();
@@ -128,10 +132,11 @@ void OpenFileWindow::bubbleSortByName(bool ascending)
         }
 
         if (!swapped)
-            break;
+            break; // udah terurut, berhenti lebih awal
     }
 }
 
+// mengurutkan fileEntries berdasarkan tanggal modifikasi (lama-baru / baru-lama) memakai bubble sort
 void OpenFileWindow::bubbleSortByDate(bool ascending)
 {
     int n = fileEntries.size();
@@ -161,6 +166,7 @@ void OpenFileWindow::bubbleSortByDate(bool ascending)
     }
 }
 
+// menghubungkan ui untuk melakukan sorting nama file, lalu render ulang tabel
 void OpenFileWindow::handleSortByNameClicked()
 {
     bubbleSortByName(sortNameAscending);
@@ -168,6 +174,7 @@ void OpenFileWindow::handleSortByNameClicked()
     renderFileTable();
 }
 
+// menghubungkan ui untuk melakukan sorting tanggal diubah, lalu render ulang tabel
 void OpenFileWindow::handleSortByDateClicked()
 {
     bubbleSortByDate(sortDateAscending);
@@ -175,6 +182,7 @@ void OpenFileWindow::handleSortByDateClicked()
     renderFileTable();
 }
 
+// dipakai untuk menyimpan path file yang sedang dipilih user di tabel, supaya dipakai saat tombol Open diklik
 void OpenFileWindow::onFileRowClicked(QTableWidgetItem *item)
 {
     QTableWidgetItem *nameItem = ui->fileTableWidget->item(item->row(), 1);
@@ -184,6 +192,7 @@ void OpenFileWindow::onFileRowClicked(QTableWidgetItem *item)
     }
 }
 
+// fungsi saat kembali ke home dari halaman open file
 void OpenFileWindow::handleBackButtonClicked()
 {
     if (mainWindowRef)
@@ -193,8 +202,10 @@ void OpenFileWindow::handleBackButtonClicked()
     this->close();
 }
 
+// dipakai untuk membuka EditorWindow dengan file yang sudah dipilih dari tabel
 void OpenFileWindow::handleOpenButtonClicked()
 {
+    // peringatan kalau user klik Open tanpa pilih file dari daftar dulu
     if (selectedFilePath.isEmpty())
     {
         QMessageBox msgBox(this);

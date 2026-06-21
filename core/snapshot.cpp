@@ -175,7 +175,7 @@ void saveSnapshot(string &currentText,Stack &undoStack,Stack &redoStack,HistoryL
     // Push teks lama ke undoStack
     push(undoStack, currentText);
 
-    // Kosongkan redoStack — ada aksi baru
+    // Kosongkan redoStack, ada aksi baru
     clearStack(redoStack);
 
     // Update teks aktif

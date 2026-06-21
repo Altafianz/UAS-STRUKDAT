@@ -25,7 +25,7 @@ public:
     void setSaveLocationText(const QString &text);
 
 signals:
-    void saveConfirmed(const QString &fileName); // dari popup_save
+    void saveConfirmed(const QString &fileName);  // dari popup_save
     void cancelled();                             // dari cancel manapun
     void saveBeforeExit();                        // dari popup_alert_notSave -> "Save"
     void discardChanges();                        // dari popup_alert_notSave -> "Don't Save"
