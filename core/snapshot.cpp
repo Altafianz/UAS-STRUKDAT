@@ -1,9 +1,7 @@
 #include "snapshot.h"
 using namespace std;
 
-// ============================================================
 //  DOUBLY LINKED LIST
-// ============================================================
 void initHistoryList(HistoryList& list) {
     list.head    = NULL;
     list.tail    = NULL;
@@ -80,9 +78,7 @@ void moveNext(HistoryList& list) {
         list.current = list.current->next;
 }
 
-// ============================================================
-//  BOUNDED QUEUE
-// ============================================================
+//  bounded queue
 void initQueue(BoundedQueue& q) {
     q.front = NULL;
     q.rear  = NULL;
@@ -126,9 +122,7 @@ void clearQueue(BoundedQueue& q) {
     q.size = 0;
 }
 
-// ============================================================
-//  SAVE SNAPSHOT
-// ============================================================
+//  save snapshot
 void saveSnapshot(string& currentText,
                   Stack& undoStack,
                   Stack& redoStack,
@@ -160,14 +154,8 @@ void saveSnapshot(string& currentText,
     currentText = newText;
 }
 
-// ============================================================
 //  JUMP TO SNAPSHOT
-// ============================================================
-string jumpToSnapshot(string& currentText,
-                      Stack& undoStack,
-                      Stack& redoStack,
-                      HistoryList& historyList,
-                      DLLNode* targetNode)
+string jumpToSnapshot(string& currentText, Stack& undoStack, Stack& redoStack, HistoryList& historyList, DLLNode* targetNode)
 {
     if (targetNode == NULL) return currentText;
 
