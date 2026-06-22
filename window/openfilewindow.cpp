@@ -38,6 +38,8 @@ OpenFileWindow::OpenFileWindow(MainWindow *mainWin, QWidget *parent)
     connect(ui->openButton, &QPushButton::clicked, this, &OpenFileWindow::handleOpenButtonClicked);
     connect(ui->fileTableWidget, &QTableWidget::itemClicked, this, &OpenFileWindow::onFileRowClicked);
     connect(ui->fileTableWidget, &QTableWidget::itemDoubleClicked, this, &OpenFileWindow::handleOpenButtonClicked);
+    connect(ui->sortByDateButton, &QPushButton::clicked, this, &OpenFileWindow::handleSortByDateClicked);
+    connect(ui->sortByNameButton, &QPushButton::clicked, this, &OpenFileWindow::handleSortByNameClicked);
 
     // ambil daftar file dari index.txt, lalu tampilkan langsung ke tabel
     loadFileEntries();
