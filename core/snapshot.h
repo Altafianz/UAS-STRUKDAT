@@ -41,13 +41,6 @@ void removeNode(HistoryList& list, DLLNode* node);
 // Hapus semua node setelah node ini (saat ada aksi baru setelah undo)
 void removeAfter(HistoryList& list, DLLNode* node);
 
-// Kosongkan seluruh list
-void clearHistoryList(HistoryList& list);
-
-// Geser pointer current mundur / maju satu langkah
-void movePrev(HistoryList& list);
-void moveNext(HistoryList& list);
-
 // ============================================================
 //  NODE — Queue
 // ============================================================

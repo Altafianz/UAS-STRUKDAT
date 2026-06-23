@@ -71,33 +71,6 @@ void removeAfter(HistoryList &list, DLLNode *node)
     list.tail = node;
 }
 
-// ============= ENGGA DIPAKE ==================
-void clearHistoryList(HistoryList &list)
-{
-    DLLNode *cur = list.head;
-    while (cur != NULL)
-    {
-        DLLNode *tmp = cur->next;
-        delete cur;
-        cur = tmp;
-    }
-    list.head = list.tail = list.current = NULL;
-    list.size = 0;
-}
-
-void movePrev(HistoryList &list)
-{
-    if (list.current != NULL && list.current->prev != NULL)
-    list.current = list.current->prev;
-}
-
-void moveNext(HistoryList &list)
-{
-    if (list.current != NULL && list.current->next != NULL)
-    list.current = list.current->next;
-}
-// ============= ENGGA DIPAKE ==================
-
 //  bounded queue
 void initQueue(BoundedQueue &q)
 {
@@ -138,20 +111,6 @@ DLLNode *enqueue(BoundedQueue &q, DLLNode *node)
 
     return NULL;
 }
-
-// =============== ENGGA DIPAKE ===============
-void clearQueue(BoundedQueue &q)
-{
-    while (q.front != NULL)
-    {
-        QueueNode *tmp = q.front;
-        q.front = q.front->next;
-        delete tmp;
-    }
-    q.rear = NULL;
-    q.size = 0;
-}
-// =============== ENGGA DIPAKE ===============
 
 //  save snapshot
 void saveSnapshot(string &currentText,Stack &undoStack,Stack &redoStack,HistoryList &historyList, BoundedQueue &historyQueue,const string &newText)
